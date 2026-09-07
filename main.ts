@@ -6,15 +6,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { writeFileSync } from 'node:fs';
 import { AppModule } from './app.module';
+import { performanceMiddleware } from './common/performance';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(performanceMiddleware());
 
   app.enableCors({
     origin: [process.env.WEB_ORIGIN, process.env.ADMIN_ORIGIN].filter(
       (origin): origin is string => Boolean(origin),
     ),
     credentials: true,
+    exposedHeaders: ['X-Request-ID', 'Server-Timing', 'X-API-Release'],
   });
 
   app.useGlobalPipes(
