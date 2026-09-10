@@ -168,10 +168,15 @@ void describe('OnboardingService', () => {
     assert.ok(result.onboardedAt instanceof Date);
 
     const upsertArg = upsertCalls[0] as {
-      update: { deletedAt: null; deletionReason: null };
+      update: {
+        deletedAt: null;
+        deletionReason: null;
+        notificationPromptShownAt: null;
+      };
     };
     assert.equal(upsertArg.update.deletedAt, null);
     assert.equal(upsertArg.update.deletionReason, null);
+    assert.equal(upsertArg.update.notificationPromptShownAt, null);
 
     const prefArg = notificationUpsertCalls[0] as {
       create: { enabled: boolean; time: string };
