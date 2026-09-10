@@ -130,7 +130,7 @@ export class UsersController {
   @ApiOperation({
     summary: '계정 탈퇴 (Figma 2395:8988)',
     description:
-      'soft delete (deletedAt set). 30일 후 cron으로 hard delete + cascade.',
+      'soft delete (deletedAt set). 물리 삭제 배치는 후속 작업으로 분리한다.',
   })
   async deleteAccount(
     @CurrentUserId() userId: string,

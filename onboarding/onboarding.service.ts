@@ -75,6 +75,7 @@ export class OnboardingService {
         notificationTime: dto.notification?.time ?? null,
         interests: dto.interests ?? [],
         onboardedAt: new Date(),
+        notificationPromptShownAt: null,
         deletedAt: null,
         deletionReason: null,
       };

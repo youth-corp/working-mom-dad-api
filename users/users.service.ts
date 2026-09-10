@@ -130,7 +130,7 @@ export class UsersService {
 
   /**
    * DELETE /me — 계정 탈퇴 (soft delete).
-   * deletedAt set. 실제 cascade hard delete는 cron(30일 후) 별도 작업.
+   * deletedAt set. 물리 삭제 배치는 후속 작업으로 분리한다.
    * 이미 탈퇴 처리된 사용자는 409.
    */
   async softDeleteAccount(userId: string, dto: DeleteAccountDto) {
@@ -145,12 +145,19 @@ export class UsersService {
         deletedAt: user.deletedAt.toISOString(),
       });
     }
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        deletedAt: new Date(),
-        deletionReason: dto.reason ?? null,
-      },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          deletedAt: new Date(),
+          deletionReason: dto.reason ?? null,
+        },
+      });
+
+      // 탈퇴 계정에 더 이상 발송하거나 노출할 이유가 없는 전달 주소와 알림함은
+      // soft delete 유예 기간과 관계없이 즉시 제거한다.
+      await tx.userPushToken.deleteMany({ where: { userId } });
+      await tx.notification.deleteMany({ where: { userId } });
     });
   }
 }

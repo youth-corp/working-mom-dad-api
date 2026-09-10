@@ -32,7 +32,7 @@ model User {
   interests                 InterestId[]      @default([]) // 설정/온보딩 — 최대 3개(app-level 검증)
   onboardedAt               DateTime? // 온보딩 완료 시각 (null = 미완료)
   parentingStyleId          String? // future — see docs/schema/10-parenting-style.md
-  // 계정 탈퇴 (docs/features/20260519-settings.md §3.1): soft delete + 30일 grace + cron hard delete
+  // 계정 탈퇴 (docs/features/20260519-settings.md §3.1): soft delete. 물리 삭제 배치는 후속 작업.
   deletedAt                 DateTime?
   deletionReason            String?
   createdAt                 DateTime          @default(now())
